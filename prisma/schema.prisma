@@ -1,0 +1,138 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Users {
+  id       Int      @id @default(autoincrement())
+  email    String   @unique @db.VarChar(50)
+  name     String   @db.VarChar(25)
+  lastname String   @db.VarChar(40)
+  phone    String   @unique @db.VarChar(20)
+  birth    DateTime @db.Date
+  password String   @db.VarChar(150)
+  Gender   Gender?  @relation(fields: [genderId], references: [id])
+  genderId Int?
+  Roles    Roles?   @relation(fields: [roleId], references: [id])
+  roleId   Int?
+  tokenId  Token?
+  Order    Order[]
+}
+
+model Gender {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique @db.VarChar(25)
+  users Users[]
+}
+
+model Roles {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique @db.VarChar(20)
+  users Users[]
+}
+
+model Token {
+  id           Int     @id @default(autoincrement())
+  refreshToken String? @unique
+  Users        Users   @relation(fields: [userId], references: [id])
+  userId       Int     @unique
+}
+
+model Image {
+  id    Int    @id @default(autoincrement())
+  path  String @unique
+  News  News?
+  Car   Car    @relation(fields: [carId], references: [id])
+  carId String @db.Uuid
+}
+
+model News {
+  id          String @id @default(uuid()) @db.Uuid
+  title       String @unique @db.VarChar(100)
+  description String
+  Image       Image  @relation(fields: [banner], references: [id])
+  banner      Int    @unique
+}
+
+model Equipment {
+  id                   Int                    @id @default(autoincrement())
+  name                 String                 @unique @db.VarChar(100)
+  Characteristic_value Characteristic_value[]
+  Option_value         Option_value[]
+  Car                  Car[]
+}
+
+model ModelName {
+  id                   Int                    @id @default(autoincrement())
+  name                 String                 @unique @db.VarChar(100)
+  Characteristic_value Characteristic_value[]
+  Option_value         Option_value[]
+  Car                  Car[]
+}
+
+model Characteristic {
+  id                   Int                    @id @default(autoincrement())
+  name                 String                 @unique @db.VarChar(100)
+  Characteristic_value Characteristic_value[]
+}
+
+model Characteristic_value {
+  id               Int            @id @default(autoincrement())
+  value            String         @db.VarChar(30)
+  unit             String         @db.VarChar(30)
+  Characteristic   Characteristic @relation(fields: [characteristicId], references: [id])
+  characteristicId Int
+  Equipment        Equipment      @relation(fields: [equipmentId], references: [id])
+  equipmentId      Int
+  ModelName        ModelName      @relation(fields: [modelNameId], references: [id])
+  modelNameId      Int
+}
+
+model Option {
+  id           Int            @id @default(autoincrement())
+  name         String         @unique @db.VarChar(100)
+  Option_value Option_value[]
+}
+
+model Option_value {
+  id          Int       @id @default(autoincrement())
+  isBasic     Boolean
+  Option      Option    @relation(fields: [optionId], references: [id])
+  optionId    Int
+  Equipment   Equipment @relation(fields: [equipmentId], references: [id])
+  equipmentId Int
+  ModelName   ModelName @relation(fields: [modelNameId], references: [id])
+  modelNameId Int
+}
+
+model Car {
+  id          String    @id @default(uuid()) @db.Uuid
+  price       Decimal   @default(0.0)
+  Equipment   Equipment @relation(fields: [equipmentId], references: [id])
+  equipmentId Int
+  ModelName   ModelName @relation(fields: [modelNameId], references: [id])
+  modelNameId Int
+  images      Image[]
+  Order       Order[]
+}
+
+model Status {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique @db.VarChar(40)
+  Order Order[]
+}
+
+model Order {
+  id       String   @id @default(uuid()) @db.Uuid
+  Users    Users    @relation(fields: [userId], references: [id])
+  userId   Int
+  Status   Status   @relation(fields: [statusId], references: [id])
+  statusId Int
+  date     DateTime @db.Date
+  Car      Car      @relation(fields: [carId], references: [id])
+  carId    String   @db.Uuid
+}
