@@ -1,11 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile} from '@nestjs/common';
 import { NewsService } from './news.service';
-import {News} from "@prisma/client";
+import {Image, News} from "@prisma/client";
+import {ImagesService} from "../images/images.service";
+import {FileInterceptor} from "@nestjs/platform-express";
 
 @Controller('news')
 export class NewsController {
   constructor(
-      private readonly newsService: NewsService
+      private readonly newsService: NewsService,
+      private imageService: ImagesService
   ) {}
 
   @Get()
@@ -21,5 +24,11 @@ export class NewsController {
   @Delete(':id')
   async delete(@Param() id: string) {
     return this.newsService.remove({id: id});
+  }
+
+  @Post('create')
+  @UseInterceptors(FileInterceptor('banner'))
+  async test(@UploadedFile() file): Promise<Image> {
+    return this.imageService.addImage(file);
   }
 }
