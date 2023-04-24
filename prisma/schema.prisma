@@ -43,11 +43,11 @@ model Token {
 }
 
 model Image {
-  id    Int    @id @default(autoincrement())
-  path  String @unique
+  id    Int     @id @default(autoincrement())
+  path  String  @unique
   News  News?
-  Car   Car    @relation(fields: [carId], references: [id])
-  carId String @db.Uuid
+  Car   Car?    @relation(fields: [carId], references: [id])
+  carId String? @db.Uuid
 }
 
 model News {

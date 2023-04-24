@@ -2,8 +2,10 @@ import { Injectable } from '@nestjs/common';
 import {PrismaService} from "../prisma.service";
 import {TokensService} from "../tokens/tokens.service";
 import {UserService} from "../users/users.service";
-import {Users} from "@prisma/client";
+import {Users, Token as PrismaToken} from "@prisma/client";
 import {Token} from "../tokens/entities/token.entity";
+import * as bcrypt from "bcrypt";
+import {Payload} from "../tokens/entities/payload.entity";
 
 @Injectable()
 export class AuthService {
@@ -16,18 +18,57 @@ export class AuthService {
     async signIn(email: string, password: string) {
         const candidate: Users = await this.usersService.user({email: email});
         if (candidate != null) {
-            if(candidate.password == password) {
-                const tokens: Token = await this.tokenService.generateTokens({
+            const isMatch: boolean = await bcrypt.compare(password, candidate.password);
+            if (isMatch) {
+                const payload: Payload = {
                     id: candidate.id,
                     roleId: candidate.roleId,
                     name: candidate.name,
                     lastname: candidate.lastname,
                     phone: candidate.phone,
-                    birth: String(candidate.birth)
-                });
+                    birth: String(candidate.birth),
+                    genderId: candidate.genderId
+                }
 
-                console.log(tokens)
+                const tokens: Token = await this.tokenService.generateTokens(payload);
+                await this.tokenService.saveToken(candidate.id, tokens.refreshToken);
+
+                return {...tokens, payload};
+            } else {
+                console.log('error')
             }
         }
+    }
+
+    async logout(refreshToken: string): Promise<void> {
+        await this.tokenService.removeToken(refreshToken);
+    }
+
+    async refresh(refreshToken: string) {
+        if (refreshToken == null) {
+            console.log('не авторизован');
+        }
+
+        const userData: Payload = await this.tokenService.validateRefreshToken(refreshToken);
+        const dbToken: PrismaToken | null = await this.tokenService.findToken({refreshToken: refreshToken});
+        if (!userData || !dbToken) {
+            console.log('не авторизован');
+        }
+
+        const user: Users = await this.prisma.users.findUnique({where: {id: userData.id}});
+        const payload: Payload = {
+            id: user.id,
+            roleId: user.roleId,
+            name: user.name,
+            lastname: user.lastname,
+            phone: user.phone,
+            birth: String(user.birth),
+            genderId: user.genderId
+        }
+
+        const tokens = await this.tokenService.generateTokens(payload);
+        await this.tokenService.saveToken(payload.id, tokens.refreshToken);
+
+        return {...tokens, payload}
     }
 }

@@ -5,4 +5,5 @@ export class Payload {
     roleId: number;
     phone: string;
     birth: string;
+    genderId: number;
 }
