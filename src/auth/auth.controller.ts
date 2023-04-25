@@ -9,21 +9,21 @@ export class AuthController {
     @Post('signIn')
     async signIn(@Body() data: {email: string, password: string}, @Res() response: Response) {
         const userData = await this.authService.signIn(data.email, data.password);
-        console.log(userData)
         response.cookie('refreshToken', userData.refreshToken, {maxAge: 30*24*60*60*1000, httpOnly: true});
         return response.json(userData);
     }
 
     @Post('logout')
-    async logout(@Req() request: Request) {
-        return this.authService.logout(request.cookies['refreshToken']);
+    async logOut(@Req() request: Request) {
+        const token: string = request.cookies['refreshToken'];
+        return this.authService.logout(token);
     }
 
     @Get('refresh')
-    async refresh(@Req() request: Request, @Res() response: Response) {
+    async refreshToken(@Req() request: Request, @Res() response: Response) {
         const token: string = request.cookies['refreshToken'];
         const data = await this.authService.refresh(token);
         response.cookie('refreshToken', data.refreshToken, {maxAge: 30*24*60*60*1000, httpOnly: true});
-        return data;
+        return response.json(data);
     }
 }

@@ -50,7 +50,9 @@ export class AuthService {
         }
 
         const userData: Payload = await this.tokenService.validateRefreshToken(refreshToken);
-        const dbToken: PrismaToken | null = await this.tokenService.findToken({refreshToken: refreshToken});
+        const dbToken: PrismaToken = await this.tokenService.findToken({
+            refreshToken: refreshToken
+        });
         if (!userData || !dbToken) {
             console.log('не авторизован');
         }
