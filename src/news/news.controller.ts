@@ -17,18 +17,57 @@ export class NewsController {
   }
 
   @Get(':id')
-  async getOneNews(@Param(':id') id: string): Promise<News> {
+  async getOneNews(@Param('id') id: string): Promise<News> {
       return this.newsService.findOne({id: id});
-  }
-
-  @Delete(':id')
-  async delete(@Param() id: string) {
-    return this.newsService.remove({id: id});
   }
 
   @Post('create')
   @UseInterceptors(FileInterceptor('banner'))
-  async test(@UploadedFile() file): Promise<Image> {
-    return this.imageService.addImage(file);
+  async create(@UploadedFile() file, @Body() newsData: {
+    title: string,
+    description: string
+  }): Promise<News> {
+    const image: Image = await this.imageService.addImage(file);
+    return this.newsService.createNews({
+      title: newsData.title,
+      description: newsData.description,
+      Image: {
+        connect: {
+          id: image.id
+        }
+      }
+    });
+  }
+
+  @Patch(':id')
+  @UseInterceptors(FileInterceptor('banner'))
+  async update(
+      @Param('id') id: string,
+      @UploadedFile() file,
+      @Body() newsData: {
+        title: string,
+        description: string
+      }
+  ): Promise<News> {
+    const image: Image = await this.imageService.addImage(file);
+    return this.newsService.updateNews({
+      where: {
+        id: id
+      },
+      data: {
+        title: newsData.title,
+        description: newsData.description,
+        Image: {
+          connect: {
+            id: image.id
+          }
+        }
+      }
+    });
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: string): Promise<void> {
+     await this.newsService.deleteNews({id: id});
   }
 }

@@ -55,12 +55,15 @@ export class TokensService {
 
     /**
      * Функция удаляет из базы данных токен пользователя
-     * @param {string} refreshToken - токен обновления
+     * @param {Prisma.TokenWhereUniqueInput} where - объект настройки удаления токена из БД
      */
-    async removeToken(refreshToken: string): Promise<void> {
+    async removeToken(userToken: string): Promise<void> {
+        const token = await this.findToken({
+            refreshToken: userToken
+        })
         await this.prisma.token.delete({
             where: {
-                refreshToken: refreshToken
+                id: token.id
             }
         })
     }
@@ -69,8 +72,8 @@ export class TokensService {
      * Функция осуществляет поиск указанного токена в базе данных
      * @param {Prisma.TokenWhereUniqueInput} where - объект с парой ключ:значения для поиска необходимой записи в таблице токенов
      */
-    async findToken(where: Prisma.TokenWhereUniqueInput): Promise<PrismaToken | null> {
-        const token: PrismaToken = await this.prisma.token.findUnique({where: where});
+    async findToken(where: Prisma.TokenWhereInput): Promise<PrismaToken | null> {
+        const token: PrismaToken = await this.prisma.token.findFirst({where});
         return token;
     }
 

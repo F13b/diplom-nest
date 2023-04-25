@@ -7,7 +7,7 @@ export class NewsService {
 
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Prisma.NewsCreateInput): Promise<News> {
+  async createNews(data: Prisma.NewsCreateInput): Promise<News> {
       return this.prisma.news.create({data});
   }
 
@@ -25,14 +25,30 @@ export class NewsService {
       cursor,
       where,
       orderBy,
+        include: {
+          Image: {
+              select: {
+                  path: true
+              }
+          }
+        }
     });
   }
 
   async findOne(where: Prisma.NewsWhereUniqueInput): Promise<News | null> {
-      return this.prisma.news.findUnique({where: where});
+      return this.prisma.news.findUnique({
+          where: where,
+          include: {
+              Image: {
+                  select: {
+                      path: true
+                  }
+              }
+          } 
+      });
   }
 
-  async update(params: {
+  async updateNews(params: {
       where: Prisma.NewsWhereUniqueInput,
       data: Prisma.NewsUpdateInput
   }): Promise<News> {
@@ -43,7 +59,7 @@ export class NewsService {
       })
   }
 
-  async remove(where: Prisma.NewsWhereUniqueInput) {
-    return this.prisma.news.delete({where});
+  async deleteNews(where: Prisma.NewsWhereUniqueInput): Promise<void> {
+    await this.prisma.news.delete({where});
   }
 }
