@@ -95,6 +95,7 @@ export class UsersController {
             phone?: string,
             birth?: string,
             genderId?: number,
+            roleId?: number
         }
     ): Promise<UsersModel> {
         return this.usersService.updateUser({
@@ -108,6 +109,11 @@ export class UsersController {
                 Gender: {
                     connect: {
                         id: userData.genderId
+                    }
+                },
+                Roles: {
+                    connect: {
+                        id: userData.roleId
                     }
                 }
             }
