@@ -6,6 +6,7 @@ import { NewsModule } from './news/news.module';
 import {ImagesModule} from "./images/images.module";
 import * as path from "path";
 import {ServeStaticModule} from "@nestjs/serve-static";
+import { OptionsModule } from './options/options.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import {ServeStaticModule} from "@nestjs/serve-static";
       ServeStaticModule.forRoot({
         rootPath: path.resolve(__dirname, 'static'),
       }),
+      OptionsModule,
   ],
   controllers: [],
   providers: [],
