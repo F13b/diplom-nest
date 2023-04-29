@@ -10,6 +10,7 @@ import { OptionsModule } from './options/options.module';
 import { OptionValuesModule } from './option_values/option_values.module';
 import { ModelNamesModule } from './model_names/model_names.module';
 import { EquipmentsModule } from './equipments/equipments.module';
+import { CharacteristicsModule } from './characteristics/characteristics.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { EquipmentsModule } from './equipments/equipments.module';
       OptionValuesModule,
       ModelNamesModule,
       EquipmentsModule,
+      CharacteristicsModule,
   ],
   controllers: [],
   providers: [],
