@@ -9,6 +9,7 @@ import {ServeStaticModule} from "@nestjs/serve-static";
 import { OptionsModule } from './options/options.module';
 import { OptionValuesModule } from './option_values/option_values.module';
 import { ModelNamesModule } from './model_names/model_names.module';
+import { EquipmentsModule } from './equipments/equipments.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ModelNamesModule } from './model_names/model_names.module';
       OptionsModule,
       OptionValuesModule,
       ModelNamesModule,
+      EquipmentsModule,
   ],
   controllers: [],
   providers: [],
