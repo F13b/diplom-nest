@@ -8,6 +8,7 @@ import * as path from "path";
 import {ServeStaticModule} from "@nestjs/serve-static";
 import { OptionsModule } from './options/options.module';
 import { OptionValuesModule } from './option_values/option_values.module';
+import { ModelNamesModule } from './model_names/model_names.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { OptionValuesModule } from './option_values/option_values.module';
       }),
       OptionsModule,
       OptionValuesModule,
+      ModelNamesModule,
   ],
   controllers: [],
   providers: [],
