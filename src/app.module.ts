@@ -7,6 +7,7 @@ import {ImagesModule} from "./images/images.module";
 import * as path from "path";
 import {ServeStaticModule} from "@nestjs/serve-static";
 import { OptionsModule } from './options/options.module';
+import { OptionValuesModule } from './option_values/option_values.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { OptionsModule } from './options/options.module';
         rootPath: path.resolve(__dirname, 'static'),
       }),
       OptionsModule,
+      OptionValuesModule,
   ],
   controllers: [],
   providers: [],
