@@ -84,8 +84,6 @@ export class UserService {
      * @param {Prisma.UsersWhereUniqueInput} where - объект с парой ключ:значения для поиска необходимой записи в таблице пользователя
      */
     async deleteUser(where: Prisma.UsersWhereUniqueInput): Promise<Users> {
-        return this.prisma.users.delete({
-            where,
-        });
+        return this.prisma.users.delete({where});
     }
 }

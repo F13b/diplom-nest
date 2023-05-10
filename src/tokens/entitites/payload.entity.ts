@@ -1,5 +1,6 @@
 export class Payload {
     id: number;
+    email: string;
     name: string;
     lastname: string;
     roleId: number;

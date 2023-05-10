@@ -3,9 +3,9 @@ import {PrismaService} from "../prisma.service";
 import {TokensService} from "../tokens/tokens.service";
 import {UserService} from "../users/users.service";
 import {Users, Token as PrismaToken} from "@prisma/client";
-import {Token} from "../tokens/entities/token.entity";
 import * as bcrypt from "bcrypt";
-import {Payload} from "../tokens/entities/payload.entity";
+import {Payload} from "../tokens/entitites/payload.entity";
+import {Token} from "../tokens/entitites/token.entity";
 
 @Injectable()
 export class AuthService {
@@ -23,6 +23,7 @@ export class AuthService {
                 const payload: Payload = {
                     id: candidate.id,
                     roleId: candidate.roleId,
+                    email: candidate.email,
                     name: candidate.name,
                     lastname: candidate.lastname,
                     phone: candidate.phone,
@@ -61,6 +62,7 @@ export class AuthService {
         const payload: Payload = {
             id: user.id,
             roleId: user.roleId,
+            email: user.email,
             name: user.name,
             lastname: user.lastname,
             phone: user.phone,

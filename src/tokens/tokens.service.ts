@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import {Payload} from "./entities/payload.entity";
 import {PrismaService} from "../prisma.service";
-import {Token} from "./entities/token.entity";
 import {JwtService} from "@nestjs/jwt";
+import {Payload} from "./entitites/payload.entity";
+import {Token} from "./entitites/token.entity";
 import {Prisma, Token as PrismaToken} from "@prisma/client";
 
 @Injectable()
 export class TokensService {
-    constructor(private prisma: PrismaService, private jwtService: JwtService) {}
+    constructor(
+        private prisma: PrismaService,
+        private jwtService: JwtService
+    ) {}
 
     /**
      * Функция принимает объект с данными пользователя и генерирует токены доступа и обновления

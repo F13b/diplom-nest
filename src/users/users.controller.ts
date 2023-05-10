@@ -1,7 +1,9 @@
-import {Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post} from "@nestjs/common";
+import {Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, UseGuards} from "@nestjs/common";
 import {UserService} from "./users.service";
 import {Users as UsersModel} from "@prisma/client";
 import {ApiOperation, ApiParam, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {Roles} from "../auth/roles.decorator";
+import {RolesGuard} from "../auth/roles.guard";
 
 @ApiTags('Users')
 @Controller('user')
@@ -17,6 +19,15 @@ export class UsersController {
     @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad Request" })
     getAllUsers(): Promise<UsersModel[]> {
         return this.usersService.users({});
+    }
+
+    @Get('managers')
+    getManagers(): Promise<UsersModel[]> {
+        return this.usersService.users({
+            where: {
+                roleId: 2
+            }
+        })
     }
 
     /**
@@ -72,6 +83,11 @@ export class UsersController {
                 }
             }
         });
+    }
+
+    @Post('logout')
+    async logout(@Body() token: string) {
+
     }
 
     /**
@@ -133,6 +149,7 @@ export class UsersController {
     async deleteUser(
         @Param('userId') id: string
     ): Promise<UsersModel> {
+        console.log(id)
         return this.usersService.deleteUser({id: Number(id)})
     }
 }
