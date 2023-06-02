@@ -42,7 +42,6 @@ CREATE TABLE "Token" (
 CREATE TABLE "Image" (
     "id" SERIAL NOT NULL,
     "path" TEXT NOT NULL,
-    "carId" UUID NOT NULL,
 
     CONSTRAINT "Image_pkey" PRIMARY KEY ("id")
 );
@@ -58,39 +57,35 @@ CREATE TABLE "News" (
 );
 
 -- CreateTable
+CREATE TABLE "Car" (
+    "id" SERIAL NOT NULL,
+    "modelNameId" INTEGER,
+    "equipmentId" INTEGER,
+    "price" DECIMAL(38,2) NOT NULL,
+    "transmission" VARCHAR(100) NOT NULL,
+    "numberOfGears" VARCHAR(100) NOT NULL,
+    "typeOfDrive" VARCHAR(100) NOT NULL,
+    "clearance" VARCHAR(100) NOT NULL,
+    "fuelTankVolume" VARCHAR(100) NOT NULL,
+    "trunkVolume" VARCHAR(100) NOT NULL,
+    "length" VARCHAR(100) NOT NULL,
+    "width" VARCHAR(100) NOT NULL,
+    "height" VARCHAR(100) NOT NULL,
+    "payload" VARCHAR(100) NOT NULL,
+    "maxSpeed" VARCHAR(100) NOT NULL,
+    "accelerationUp" VARCHAR(100) NOT NULL,
+    "fuelConsumption" VARCHAR(100) NOT NULL,
+    "bannerId" INTEGER NOT NULL,
+
+    CONSTRAINT "Car_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Equipment" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(100) NOT NULL,
 
     CONSTRAINT "Equipment_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "ModelName" (
-    "id" SERIAL NOT NULL,
-    "name" VARCHAR(100) NOT NULL,
-
-    CONSTRAINT "ModelName_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Characteristic" (
-    "id" SERIAL NOT NULL,
-    "name" VARCHAR(100) NOT NULL,
-
-    CONSTRAINT "Characteristic_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Characteristic_value" (
-    "id" SERIAL NOT NULL,
-    "value" VARCHAR(30) NOT NULL,
-    "unit" VARCHAR(30) NOT NULL,
-    "characteristicId" INTEGER NOT NULL,
-    "equipmentId" INTEGER NOT NULL,
-    "modelNameId" INTEGER NOT NULL,
-
-    CONSTRAINT "Characteristic_value_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -102,24 +97,36 @@ CREATE TABLE "Option" (
 );
 
 -- CreateTable
-CREATE TABLE "Option_value" (
-    "id" SERIAL NOT NULL,
-    "isBasic" BOOLEAN NOT NULL,
+CREATE TABLE "OptionsOnCar" (
+    "carId" INTEGER NOT NULL,
     "optionId" INTEGER NOT NULL,
-    "equipmentId" INTEGER NOT NULL,
-    "modelNameId" INTEGER NOT NULL,
 
-    CONSTRAINT "Option_value_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "OptionsOnCar_pkey" PRIMARY KEY ("carId","optionId")
 );
 
 -- CreateTable
-CREATE TABLE "Car" (
-    "id" UUID NOT NULL,
-    "price" DECIMAL(65,30) NOT NULL DEFAULT 0.0,
-    "equipmentId" INTEGER NOT NULL,
-    "modelNameId" INTEGER NOT NULL,
+CREATE TABLE "ModelName" (
+    "id" SERIAL NOT NULL,
+    "name" VARCHAR(100) NOT NULL,
 
-    CONSTRAINT "Car_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "ModelName_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Colors" (
+    "id" SERIAL NOT NULL,
+    "name" VARCHAR(150) NOT NULL,
+    "code" VARCHAR(100) NOT NULL,
+
+    CONSTRAINT "Colors_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ColorsOnCars" (
+    "carId" INTEGER NOT NULL,
+    "colorsId" INTEGER NOT NULL,
+
+    CONSTRAINT "ColorsOnCars_pkey" PRIMARY KEY ("carId","colorsId")
 );
 
 -- CreateTable
@@ -136,7 +143,7 @@ CREATE TABLE "Order" (
     "userId" INTEGER NOT NULL,
     "statusId" INTEGER NOT NULL,
     "date" DATE NOT NULL,
-    "carId" UUID NOT NULL,
+    "carId" INTEGER NOT NULL,
 
     CONSTRAINT "Order_pkey" PRIMARY KEY ("id")
 );
@@ -154,9 +161,6 @@ CREATE UNIQUE INDEX "Gender_name_key" ON "Gender"("name");
 CREATE UNIQUE INDEX "Roles_name_key" ON "Roles"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Token_refreshToken_key" ON "Token"("refreshToken");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Token_userId_key" ON "Token"("userId");
 
 -- CreateIndex
@@ -172,13 +176,13 @@ CREATE UNIQUE INDEX "News_banner_key" ON "News"("banner");
 CREATE UNIQUE INDEX "Equipment_name_key" ON "Equipment"("name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Option_name_key" ON "Option"("name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "ModelName_name_key" ON "ModelName"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Characteristic_name_key" ON "Characteristic"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Option_name_key" ON "Option"("name");
+CREATE UNIQUE INDEX "Colors_code_key" ON "Colors"("code");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Status_name_key" ON "Status"("name");
@@ -190,37 +194,31 @@ ALTER TABLE "Users" ADD CONSTRAINT "Users_genderId_fkey" FOREIGN KEY ("genderId"
 ALTER TABLE "Users" ADD CONSTRAINT "Users_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Roles"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Token" ADD CONSTRAINT "Token_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Image" ADD CONSTRAINT "Image_carId_fkey" FOREIGN KEY ("carId") REFERENCES "Car"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Token" ADD CONSTRAINT "Token_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "News" ADD CONSTRAINT "News_banner_fkey" FOREIGN KEY ("banner") REFERENCES "Image"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Characteristic_value" ADD CONSTRAINT "Characteristic_value_characteristicId_fkey" FOREIGN KEY ("characteristicId") REFERENCES "Characteristic"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Car" ADD CONSTRAINT "Car_modelNameId_fkey" FOREIGN KEY ("modelNameId") REFERENCES "ModelName"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Characteristic_value" ADD CONSTRAINT "Characteristic_value_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Car" ADD CONSTRAINT "Car_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Characteristic_value" ADD CONSTRAINT "Characteristic_value_modelNameId_fkey" FOREIGN KEY ("modelNameId") REFERENCES "ModelName"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Car" ADD CONSTRAINT "Car_bannerId_fkey" FOREIGN KEY ("bannerId") REFERENCES "Image"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Option_value" ADD CONSTRAINT "Option_value_optionId_fkey" FOREIGN KEY ("optionId") REFERENCES "Option"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "OptionsOnCar" ADD CONSTRAINT "OptionsOnCar_carId_fkey" FOREIGN KEY ("carId") REFERENCES "Car"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Option_value" ADD CONSTRAINT "Option_value_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "OptionsOnCar" ADD CONSTRAINT "OptionsOnCar_optionId_fkey" FOREIGN KEY ("optionId") REFERENCES "Option"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Option_value" ADD CONSTRAINT "Option_value_modelNameId_fkey" FOREIGN KEY ("modelNameId") REFERENCES "ModelName"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ColorsOnCars" ADD CONSTRAINT "ColorsOnCars_carId_fkey" FOREIGN KEY ("carId") REFERENCES "Car"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Car" ADD CONSTRAINT "Car_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Car" ADD CONSTRAINT "Car_modelNameId_fkey" FOREIGN KEY ("modelNameId") REFERENCES "ModelName"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ColorsOnCars" ADD CONSTRAINT "ColorsOnCars_colorsId_fkey" FOREIGN KEY ("colorsId") REFERENCES "Colors"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Order" ADD CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

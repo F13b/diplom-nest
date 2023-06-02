@@ -15,11 +15,7 @@ export class ImagesService {
      */
     async addImage(file): Promise<Image> {
         const image = await this.createImage(file);
-        return this.prisma.image.create({
-            data: {
-                path: image
-            }
-        });
+        return this.prisma.image.create({ data: { path: image } });
     }
 
     /**

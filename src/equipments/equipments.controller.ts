@@ -29,7 +29,7 @@ export class EquipmentsController {
     async updateEquipment(
         @Param('id') id: string,
         @Body() data: {
-            name: string
+            name?: string
         }
     ): Promise<Equipment> {
         return this.equipmentsService.update(
