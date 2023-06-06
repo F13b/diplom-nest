@@ -11,30 +11,4 @@ export class AppController {
       private readonly userService: UserService,
       private readonly genderService: GendersService,
   ) {}
-
-  // @Post('user')
-  // @ApiExcludeEndpoint()
-  // async signupUser(
-  //     @Body() userData: {
-  //         email: string,
-  //         name: string,
-  //         lastname: string,
-  //         phone: string,
-  //         birth: string,
-  //         genderId: number
-  //     },
-  // ): Promise<UserModel> {
-  //     return this.userService.createUser({
-  //         email: userData.email,
-  //         name: userData.name,
-  //         lastname: userData.lastname,
-  //         phone: userData.phone,
-  //         birth: new Date(userData.birth),
-  //         Gender: {
-  //             connect: {
-  //                 id: userData.genderId
-  //             }
-  //         }
-  //     });
-  // }
 }
